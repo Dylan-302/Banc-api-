@@ -1,31 +1,46 @@
-package config
+package common
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
 )
 
-// Load carga las variables de entorno desde .env
-func Load() {
-	if err := godotenv.Load(); err != nil {
-		log.Print("No .env file found; using environment variables")
-	}
+type ConfigDB struct {
+	Host,
+	Password,
+	Username,
+	Charset,
+	Dbname,
+	Port string
 }
 
-// GetDatabaseURL retorna la URL de conexión a la base de datos
-func GetDatabaseURL() string {
-	if url := os.Getenv("DATABASE_URL"); url != "" {
-		return url
-	}
-	return "postgresql://postgres:postgres@localhost:5432/neondb?sslmode=disable"
+type Config struct {
+	DB  *ConfigDB
+	App *ConfigApp
+}
+type ConfigApp struct {
+	Port string
 }
 
-// GetServerPort retorna el puerto del servidor
-func GetServerPort() string {
-	if port := os.Getenv("SERVER_PORT"); port != "" {
-		return port
+func NewConfig() *Config {
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Println("error al cargar el .env")
+		panic(err)
 	}
-	return "8080"
+
+	return &Config{
+		App: &ConfigApp{
+			Port: os.Getenv("PORT"),
+		},
+		DB: &ConfigDB{
+			Host:     os.Getenv("DB_HOST"),
+			Password: os.Getenv("DB_PASSWORD"),
+			Username: os.Getenv("DB_USER_NAME"),
+			Dbname:   os.Getenv("DB_NAME"),
+			Port:     os.Getenv("DB_PORT"),
+		},
+	}
 }
