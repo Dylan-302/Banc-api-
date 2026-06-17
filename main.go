@@ -3,14 +3,18 @@ package main
 import (
 	"log"
 
-	db "banc-api/src/infrastructure/db/adapter"
+	config "banc-api/src/common/config"
+	adapter "banc-api/src/infrastructure/db/adapter"
 
 	"github.com/gofiber/fiber/v3"
 )
 
 func main() {
+	// Inicializar configuración
+	cfg := config.NewConfig()
 
-	db.DBconection()
+	// Conectar a la base de datos
+	_ = adapter.NewDBConnection(cfg)
 
 	app := fiber.New()
 
