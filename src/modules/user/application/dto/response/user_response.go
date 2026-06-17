@@ -1,16 +1,23 @@
 package response
 
-// UserResponse representa la respuesta de usuario sin datos sensibles
-type UserResponse struct {
-	ID              uint   `json:"id"`
+import "time"
+
+type NewUserResponse struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+type UserResponseDelete struct {
+	ID              int    `json:"id"`
 	Username        string `json:"username"`
 	Email           string `json:"email"`
 	FechadeCreacion string `json:"fecha_creacion"`
 }
 
-// LoginResponse representa la respuesta de inicio de sesión
-type LoginResponse struct {
-	Token     string       `json:"token"`
-	ExpiresIn int64        `json:"expires_in"`
-	User      UserResponse `json:"user"`
+type UserResponse struct {
+	ID              int       `json:"id"`
+	Username        string    `json:"username"`
+	Email           string    `json:"email"`
+	FechadeCreacion time.Time `json:"fecha_creacion"`
 }
