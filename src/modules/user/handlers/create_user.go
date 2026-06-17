@@ -1,45 +1,49 @@
 package handlers
 
 import (
-	"github.com/gofiber/fiber/v2"
-
+	"banc-api/src/modules/user/application/dto/request"
+	"banc-api/src/modules/user/application/mapper"
 	"banc-api/src/modules/user/application/usecase"
 	"banc-api/src/modules/user/domain/repositories"
+	"time"
+
+	"github.com/gofiber/fiber/v3"
 )
 
-type UserHandler struct {
-	Repo repositories.UserRepository
+// CreateUserHandler es un handler para crear nuevos usuarios.
+type CreateUserHandler struct {
+	repo repositories.UserRepository
 }
 
-func NewUserHandler(repo repositories.UserRepository) *UserHandler {
-	return &UserHandler{Repo: repo}
+// NewCreateUserHandler crea una nueva instancia del handler.
+func NewCreateUserHandler(repo repositories.UserRepository) *CreateUserHandler {
+	return &CreateUserHandler{repo}
 }
 
-func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
-	var req struct {
-		Username string `json:"username"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
-	if err := c.BodyParser(&req); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+// Handle maneja la solicitud de creación de usuario.
+func (h *CreateUserHandler) Handle(c fiber.Ctx) error {
+	var req request.CreateUserRequest
+
+	if err := c.Bind().Body(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
 	}
 
-	createdUser, err := usecase.CreateUser(req.Username, req.Email, req.Password, h.Repo)
+	// Mapear el request a la entidad
+	user := mapper.CreateUserRequestToEntity(req)
+	user.FechadeCreacion = time.Now()
+
+	// Ejecutar el caso de uso
+	createdUser, err := usecase.CreateUserUsecase(user, h.repo)
 	if err != nil {
-		return err
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to create user",
+		})
 	}
-	// Construir respuesta mínima (sin exponer password)
-	resp := struct {
-		ID              uint   `json:"id"`
-		Username        string `json:"username"`
-		Email           string `json:"email"`
-		FechadeCreacion string `json:"fecha_creacion"`
-	}{
-		ID:              createdUser.ID,
-		Username:        createdUser.Username,
-		Email:           createdUser.Email,
-		FechadeCreacion: createdUser.FechadeCreacion.Format("2006-01-02T15:04:05Z07:00"),
-	}
-	return c.Status(fiber.StatusCreated).JSON(resp)
+
+	// Mapear la respuesta
+	response := mapper.UserEntityToResponse(*createdUser)
+
+	return c.Status(fiber.StatusCreated).JSON(response)
 }
