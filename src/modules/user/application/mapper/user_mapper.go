@@ -24,3 +24,12 @@ func UserEntityToResponse(user entities.User) response.UserResponse {
 		FechadeCreacion: user.FechadeCreacion,
 	}
 }
+
+// UsersEntitiesToResponses mapea múltiples entidades de usuario a respuestas.
+func UsersEntitiesToResponses(users []entities.User) []response.UserResponse {
+	result := make([]response.UserResponse, len(users))
+	for i, user := range users {
+		result[i] = UserEntityToResponse(user)
+	}
+	return result
+}
