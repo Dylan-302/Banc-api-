@@ -7,7 +7,15 @@ import (
 )
 
 func UserFindByIdUsecase(id uint, repo repositories.UserRepository) (*response.UserResponse, error) {
+	user, err := FindByIDUsecase(id, repo)
+	if err != nil {
+		return nil, err
+	}
 
+	return user, nil
+}
+
+func FindByIDUsecase(id uint, repo repositories.UserRepository) (*response.UserResponse, error) {
 	user, err := repo.FindByID(id)
 	if err != nil {
 		return nil, err
@@ -17,12 +25,12 @@ func UserFindByIdUsecase(id uint, repo repositories.UserRepository) (*response.U
 		return nil, errors.New("usuario no encontrado")
 	}
 
-	res := &response.UserResponse{
+	respons := &response.UserResponse{
 		ID:              int(user.ID),
 		Username:        user.Username,
 		Email:           user.Email,
 		FechadeCreacion: user.FechadeCreacion,
 	}
 
-	return res, nil
+	return respons, nil
 }
