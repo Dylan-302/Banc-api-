@@ -6,6 +6,7 @@ import "banc-api/src/modules/user/domain/entities"
 type UserRepository interface {
 	Create(user entities.User) (*entities.User, error)
 	FindByID(id uint) (*entities.User, error)
+	FindAll() ([]entities.User, error)
 	GetAll() ([]entities.User, error)
 	Update(user entities.User) (*entities.User, error)
 	Delete(id uint) error

@@ -8,10 +8,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/middleware/cors"
+	middleware "banc-api/src/infraestructure/http/middleware"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"go.uber.org/fx"
-	"gorm.io/gorm/logger"
 )
 
 func setRoutesByModule(app *fiber.App, h *types.HandlersStore) {
@@ -57,27 +58,30 @@ func setRoutesByModule(app *fiber.App, h *types.HandlersStore) {
 		}
 	}
 }
-func errorHandler(c *fiber.Ctx, err error) error {
+func errorHandler(c fiber.Ctx, err error) error {
 	code := fiber.StatusInternalServerError
 	var e *fiber.Error
 	if errors.As(err, &e) {
 		code = e.Code
 	}
-	return c.Status(code).JSON(fiber.Map{
+	c.Status(code).JSON(fiber.Map{
 		"isError": true,
 		"message": err.Error(),
 	})
+	return nil
 }
+
 func NewHttpFiberServer(lc fx.Lifecycle, h *types.HandlersStore, cfg *config.Config) *fiber.App {
 	app := fiber.New(fiber.Config{
 		ErrorHandler: errorHandler,
 	})
 
 	app.Use(cors.New())
-	app.Use(logger.New())
+	app.Use(logger.NewWithConfig())
 
-	app.Get("/health", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{"status": "ok"})
+	app.Get("/health", func(c fiber.Ctx) error {
+		c.JSON(fiber.Map{"status": "ok"})
+		return nil
 	})
 
 	setRoutesByModule(app, h)

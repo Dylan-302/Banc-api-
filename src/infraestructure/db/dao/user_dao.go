@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"banc-api/src/infrastructure/db/models"
+	"banc-api/src/infraestructure/db/models"
 	"banc-api/src/modules/user/domain/entities"
 
 	"gorm.io/gorm"
@@ -17,7 +17,7 @@ func NewUserDao(db *gorm.DB) *UserDao {
 	return &UserDao{db: db}
 }
 
-// GetAll devuelve todos los usuarios almacenados.
+// GetAll devuelve todos los usuarios almacenados. 
 func (u *UserDao) GetAll() ([]entities.User, error) {
 	var users []models.User
 	if err := u.db.Find(&users).Error; err != nil {

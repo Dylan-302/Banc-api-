@@ -1,11 +1,27 @@
 package usecase
 
 import (
-	"banc-api/src/modules/user/domain/entities"
+	"banc-api/src/modules/user/application/dto/response"
 	"banc-api/src/modules/user/domain/repositories"
 )
 
-// GetAllUserUsecase obtiene todos los usuarios desde el repositorio.
-func GetAllUserUsecase(repo repositories.UserRepository) ([]entities.User, error) {
-	return repo.GetAll()
+func GetAllUsersUsecase(repo repositories.UserRepository) ([]*response.UserResponse, error) {
+	usersEntities, err := repo.FindAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var responseList []*response.UserResponse
+
+	for i := range usersEntities {
+		user := usersEntities[i]
+		dto := &response.UserResponse{
+			ID:       int(user.ID),
+			Username: user.Username,
+			Email:    user.Email,
+		}
+		responseList = append(responseList, dto)
+	}
+
+	return responseList, nil
 }
