@@ -1,13 +1,13 @@
 package common
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type HandlerModule struct {
-	Handler      func(*fiber.Ctx) error
+	Handler      func(fiber.Ctx) error
 	Route        string
-	Method       interface{}
+	Method       string
 	RequiresAuth bool
 }
 

@@ -16,6 +16,16 @@ type DBConnection struct {
 }
 
 func NewDBConnection(cfg *config.Config) *DBConnection {
+	if cfg == nil || cfg.DB == nil {
+		log.Println("database configuration is not available, using in-memory fallback")
+		return &DBConnection{}
+	}
+
+	if cfg.DB.Host == "" || cfg.DB.Username == "" || cfg.DB.Dbname == "" || cfg.DB.Port == "" {
+		log.Println("database configuration is incomplete, using in-memory fallback")
+		return &DBConnection{}
+	}
+
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		cfg.DB.Username,
 		cfg.DB.Password,
@@ -28,7 +38,8 @@ func NewDBConnection(cfg *config.Config) *DBConnection {
 		Logger: logger.Default.LogMode(logger.Warn), // Solo warnings y errores
 	})
 	if err != nil {
-		log.Fatalf("Error to connect database : %s", err)
+		log.Printf("error connecting to database, using in-memory fallback: %s", err)
+		return &DBConnection{}
 	}
 
 	return &DBConnection{db}

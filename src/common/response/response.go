@@ -4,13 +4,15 @@ import (
 	"net/http"
 
 	"banc-api/src/common/dto"
-
-	"github.com/gin-gonic/gin"
 )
 
+type ResponseContext interface {
+	JSON(code int, obj any) error
+}
+
 // Success responde con éxito
-func Success(c *gin.Context, data interface{}, message string) {
-	c.JSON(http.StatusOK, dto.BaseResponse{
+func Success(c ResponseContext, data interface{}, message string) error {
+	return c.JSON(http.StatusOK, dto.BaseResponse{
 		Success: true,
 		Message: message,
 		Data:    data,
@@ -18,8 +20,8 @@ func Success(c *gin.Context, data interface{}, message string) {
 }
 
 // Created responde con recurso creado
-func Created(c *gin.Context, data interface{}, message string) {
-	c.JSON(http.StatusCreated, dto.BaseResponse{
+func Created(c ResponseContext, data interface{}, message string) error {
+	return c.JSON(http.StatusCreated, dto.BaseResponse{
 		Success: true,
 		Message: message,
 		Data:    data,
@@ -27,8 +29,8 @@ func Created(c *gin.Context, data interface{}, message string) {
 }
 
 // Error responde con error
-func Error(c *gin.Context, statusCode int, message string, err string) {
-	c.JSON(statusCode, dto.ErrorResponse{
+func Error(c ResponseContext, statusCode int, message string, err string) error {
+	return c.JSON(statusCode, dto.ErrorResponse{
 		Success: false,
 		Message: message,
 		Error:   err,
@@ -36,16 +38,16 @@ func Error(c *gin.Context, statusCode int, message string, err string) {
 }
 
 // NotFound responde con recurso no encontrado
-func NotFound(c *gin.Context, message string) {
-	Error(c, http.StatusNotFound, message, "")
+func NotFound(c ResponseContext, message string) error {
+	return Error(c, http.StatusNotFound, message, "")
 }
 
 // BadRequest responde con error de solicitud
-func BadRequest(c *gin.Context, message string) {
-	Error(c, http.StatusBadRequest, message, "")
+func BadRequest(c ResponseContext, message string) error {
+	return Error(c, http.StatusBadRequest, message, "")
 }
 
 // InternalError responde con error interno
-func InternalError(c *gin.Context, message string) {
-	Error(c, http.StatusInternalServerError, message, "")
+func InternalError(c ResponseContext, message string) error {
+	return Error(c, http.StatusInternalServerError, message, "")
 }

@@ -17,7 +17,12 @@ func NewUserDao(db *gorm.DB) *UserDao {
 	return &UserDao{db: db}
 }
 
-// GetAll devuelve todos los usuarios almacenados. 
+// FindAll devuelve todos los usuarios almacenados.
+func (u *UserDao) FindAll() ([]entities.User, error) {
+	return u.GetAll()
+}
+
+// GetAll devuelve todos los usuarios almacenados.
 func (u *UserDao) GetAll() ([]entities.User, error) {
 	var users []models.User
 	if err := u.db.Find(&users).Error; err != nil {
