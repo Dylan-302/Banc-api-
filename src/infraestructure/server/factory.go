@@ -1,9 +1,9 @@
 package infraestructure
 
 import (
-	config "src/common/config"
-	"src/common/types"
-	"src/infraestructure/db"
+	config "banc-api/src/common/config"
+	types "banc-api/src/common/types"
+	adapter "banc-api/src/infraestructure/db/adapter"
 
 	"go.uber.org/fx"
 )
@@ -16,7 +16,7 @@ func (ps *ProvidersStore) Init() {
 	ps.Providers = []fx.Option{
 		fx.Provide(types.NewHandlersStore),
 		fx.Provide(config.NewConfig),
-		fx.Provide(db.NewDBConnection),
+		fx.Provide(adapter.NewDBConnection),
 	}
 }
 func (ps *ProvidersStore) AddModule(p []fx.Option) {

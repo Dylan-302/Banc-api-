@@ -1,17 +1,18 @@
 package infraestructure
 
 import (
-	config "banc-api/src/common/config"
-	types "banc-api/src/common/types"
 	"context"
 	"errors"
 	"fmt"
 	"net/http"
 
-	middleware "banc-api/src/infraestructure/http/middleware"
+	config "banc-api/src/common/config"
+	types "banc-api/src/common/types"
+	middleware "banc-api/src/infraestructure/http"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/cors"
+	"github.com/gofiber/fiber/v3/middleware/logger"
 	"go.uber.org/fx"
 )
 
@@ -77,7 +78,7 @@ func NewHttpFiberServer(lc fx.Lifecycle, h *types.HandlersStore, cfg *config.Con
 	})
 
 	app.Use(cors.New())
-	app.Use(logger.NewWithConfig())
+	app.Use(logger.New())
 
 	app.Get("/health", func(c fiber.Ctx) error {
 		c.JSON(fiber.Map{"status": "ok"})

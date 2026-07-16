@@ -25,15 +25,20 @@ type ConfigApp struct {
 }
 
 func NewConfig() *Config {
-	err := godotenv.Load(".env")
-	if err != nil {
-		fmt.Println("error al cargar el .env")
-		panic(err)
+	if _, err := os.Stat(".env"); err == nil {
+		if loadErr := godotenv.Load(".env"); loadErr != nil {
+			fmt.Println("error al cargar el .env", loadErr)
+		}
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
 	}
 
 	return &Config{
 		App: &ConfigApp{
-			Port: os.Getenv("PORT"),
+			Port: port,
 		},
 		DB: &ConfigDB{
 			Host:     os.Getenv("DB_HOST"),

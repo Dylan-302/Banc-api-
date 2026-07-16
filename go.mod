@@ -3,7 +3,6 @@ module banc-api
 go 1.26.1
 
 require (
-	github.com/gin-gonic/gin v1.12.0
 	github.com/gofiber/fiber/v2 v2.52.13
 	github.com/gofiber/fiber/v3 v3.0.0
 	github.com/joho/godotenv v1.5.1
